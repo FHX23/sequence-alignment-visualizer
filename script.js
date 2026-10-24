@@ -18,8 +18,10 @@ $(document).ready(function () {
     if (seq1Input) seq1Input.addEventListener('input', convertirMayusculas);
     if (seq2Input) seq2Input.addEventListener('input', convertirMayusculas);
 
-    d3.select("#root").remove();
-    inicializar(algoritmo);
+    if (typeof d3 !== 'undefined') {
+        d3.select("#root").remove();
+        inicializar(algoritmo);
+    }
 
     $('.seq').on('input change', function () { inicializar(algoritmo); });
     $('.params').on('input change', function () { inicializar(algoritmo); });
