@@ -33,11 +33,25 @@ Este visualizador fue desarrollado en el marco de trabajo de tesis e investigaci
 
 ## ✨ Características Principales
 
-- **Configuración de Puntuaciones en Vivo:** Ajuste dinámico de parámetros de *Match* (coincidencia), *Mismatch* (discrepancia) y penalización por *Gap*.
-- **Paso a Paso Controlado:** Botones **Siguiente** y **Anterior** que permiten al estudiante o investigador inspeccionar el llenado celda a celda de la matriz de programación dinámica.
-- **Traceback Interactivo:** Rastreo visual y animación del camino óptimo mediante flechas vectoriales SVG (diagonal, superior y lateral).
-- **Renderizado Matemático:** Visualización formal del alineamiento final y la ecuación de puntaje en notación LaTeX renderizada en tiempo real con MathJax.
-- **Alternador Global / Local:** Selector rápido en la barra lateral para alternar entre ambos algoritmos conservando las secuencias de entrada.
+- **Controles de Reproducción y Avance Rápido:**
+  - `[ ⏮ Inicio ]`: Reinicia la matriz al estado base.
+  - `[ ◀ Anterior ]`: Retrocede un paso desmarcando la celda correspondiente.
+  - `[ ▶ Auto / ⏸ Pausa ]`: Reproducción automática paso a paso con intervalo fluido (~120ms).
+  - `[ Siguiente ▶ ]`: Avanza exactamente una celda en la matriz o un paso de traceback.
+  - `[ ⏩ +10 ]`: Avanza 10 pasos en un solo clic para acelerar la demostración.
+  - `[ ⏭ Final ]`: Completa instantáneamente todo el llenado de la matriz y el camino de traceback óptimo.
+- **Panel Pedagógico de Cálculo de Celdas:**
+  - Detalle interactivo celda a celda mostrando la comparación de caracteres ($S_1[i]$ vs $S_2[j]$), si es *Match* o *Mismatch*, los valores calculados por cada camino (Diagonal, Superior, Lateral y Reinicio local en Smith-Waterman), y el valor máximo seleccionado con etiqueta destacada.
+  - **Inspección al Pasar el Cursor:** Puedes situar el ratón sobre cualquier celda calculada para revisar su desglose matemático en cualquier momento.
+- **Trazado hacia Atrás (Traceback) en Vivo:**
+  - Dibuja flechas vectoriales SVG hacia el origen del puntaje óptimo y resalta la ruta completa en verde esmeralda.
+  - Reconstruye en tiempo real el alineamiento de ambas secuencias, indicando coincidencias exactas (`|`), discrepancias (`:`) y huecos (`-`) junto al puntaje total acumulado.
+- **Diseño Adaptativo sin Espacios Muertos:**
+  - ViewBox SVG proporcional al número exacto de filas y columnas, eliminando desbordamientos verticales innecesarios y centrando la matriz en el área de trabajo con respecto a la barra lateral.
+- **Renderizado Matemático:**
+  - Notación formal en LaTeX renderizada mediante MathJax.
+- **Alternador Global / Local:**
+  - Selector rápido en la barra lateral para cambiar entre Needleman-Wunsch y Smith-Waterman en cualquier momento.
 
 ---
 

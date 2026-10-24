@@ -1,20 +1,26 @@
 function siguiente(algoritmo, p) {
-    const seq1 = $('#seq_1').val();
-    const seq2 = $('#seq_2').val();
-    const gap = parseInt($('#gapScore').val(), 10);
-    const matchScore = parseInt($('#matchScore').val(), 10);
-    const mismatchScore = parseInt($('#mismatchScore').val(), 10);
+    const seq1 = $('#seq_1').val().trim().toUpperCase();
+    const seq2 = $('#seq_2').val().trim().toUpperCase();
+    const gap = parseInt($('#gapScore').val(), 10) || -2;
+    const matchScore = parseInt($('#matchScore').val(), 10) || 1;
+    const mismatchScore = parseInt($('#mismatchScore').val(), 10) || -1;
 
     let coordenadas = obtenerCoordenadas(paso);
-    let s1 = obtenerSecuencia(nodes, coordenadas[0], "seq1");
-    let s2 = obtenerSecuencia(nodes, coordenadas[1], "seq2");
+    if (!coordenadas) return;
+
+    let s1 = seq1[coordenadas[0] - 1] || '';
+    let s2 = seq2[coordenadas[1] - 1] || '';
     let score = (s1 === s2) ? matchScore : mismatchScore;
 
-    let tooltip = [obtenerPuntaje(coordenadas[0] - 1, coordenadas[1] - 1), obtenerPuntaje(coordenadas[0] - 1, coordenadas[1]), obtenerPuntaje(coordenadas[0], coordenadas[1] - 1)];
+    let tooltip = [
+        obtenerPuntaje(coordenadas[0] - 1, coordenadas[1] - 1),
+        obtenerPuntaje(coordenadas[0] - 1, coordenadas[1]),
+        obtenerPuntaje(coordenadas[0], coordenadas[1] - 1)
+    ];
 
-    let diagonal = obtenerPuntaje(coordenadas[0] - 1, coordenadas[1] - 1) + score;
-    let superior = obtenerPuntaje(coordenadas[0] - 1, coordenadas[1]) + gap;
-    let lateral = obtenerPuntaje(coordenadas[0], coordenadas[1] - 1) + gap;
+    let diagonal = (tooltip[0] !== null ? tooltip[0] : 0) + score;
+    let superior = (tooltip[1] !== null ? tooltip[1] : 0) + gap;
+    let lateral = (tooltip[2] !== null ? tooltip[2] : 0) + gap;
     let zero = 0;
 
     let puntajes = (algoritmo === "nw") ? [diagonal, superior, lateral] : [diagonal, superior, lateral, zero];
@@ -28,11 +34,28 @@ function siguiente(algoritmo, p) {
 
     edges = inicializacion2(coordenadas[0], coordenadas[1], maximoPuntaje, puntajesMaximos, tooltip, (s1 === s2) ? "coincidencia" : "discrepancia");
 
-    // Se llama a la función de renderizado con la configuración actualizada.
+    const currentCellInfo = {
+        i: coordenadas[0],
+        j: coordenadas[1],
+        s1: s1,
+        s2: s2,
+        match: (s1 === s2) ? "coincidencia" : "discrepancia",
+        score: score,
+        diagPrev: tooltip[0],
+        supPrev: tooltip[1],
+        latPrev: tooltip[2],
+        diagonal: diagonal,
+        superior: superior,
+        lateral: lateral,
+        zero: zero,
+        maximo: maximoPuntaje,
+        puntajesMaximos: puntajesMaximos
+    };
+
     const config = {
         algoritmo: algoritmo,
         titulo: algoritmo === "nw" ? "Alineamiento Global: Needleman-Wunsch" : "Alineamiento Local: Smith-Waterman",
-        subtitulo: "Llenado de matriz paso " + p,
+        subtitulo: `Llenado de matriz: celda [${coordenadas[0]}, ${coordenadas[1]}] (paso ${p})`,
         edges: edges,
         nodes: nodes,
         seq1: seq1,
@@ -42,6 +65,7 @@ function siguiente(algoritmo, p) {
         mismatchScore: mismatchScore,
         paso: paso,
         highlightCoords: { i: coordenadas[0], j: coordenadas[1] },
+        currentCellInfo: currentCellInfo,
         equation: createEquation(puntajesMaximos, algoritmo)
     };
 
@@ -49,41 +73,36 @@ function siguiente(algoritmo, p) {
 }
 
 function inicializacion2(x, y, max, puntajes, tooltip, match) {
-    const edge = edges.find(e => e.i === x && e.j === y)
+    const edge = edges.find(e => e.i === x && e.j === y);
     if (edge) {
-        edge.puntaje = max
-        if (puntajes.includes('diagonal')) edge.diagonal = 1
-        if (puntajes.includes('superior')) edge.superior = 1
-        if (puntajes.includes('lateral')) edge.lateral = 1
-        if (puntajes.includes('zero')) edge.zero = 1
-        edge.d = tooltip[0]
-        edge.s = tooltip[1]
-        edge.l = tooltip[2]
-        edge.z = tooltip[3]
-        edge.max = max
-        edge.match = match
+        edge.puntaje = max;
+        edge.diagonal = puntajes.includes('diagonal') ? 1 : 0;
+        edge.superior = puntajes.includes('superior') ? 1 : 0;
+        edge.lateral = puntajes.includes('lateral') ? 1 : 0;
+        edge.zero = puntajes.includes('zero') ? 1 : 0;
+        edge.d = tooltip[0];
+        edge.s = tooltip[1];
+        edge.l = tooltip[2];
+        edge.max = max;
+        edge.match = match;
     }
-    return edges
+    return edges;
 }
 
-function obtenerCoordenadas(paso) {
-    const x = n - 1
-    const y = m - 1
-    if (paso < 1 || paso > x * y) {
+function obtenerCoordenadas(p) {
+    const x = n - 1;
+    const y = m - 1;
+    if (p < 1 || p > x * y) {
         return null; 
     }
-    const fila = Math.ceil(paso / y); 
-    const columna = paso % y === 0 ? y : paso % y; 
+    const fila = Math.ceil(p / y); 
+    const columna = p % y === 0 ? y : p % y; 
     return [fila, columna]; 
 }
 
 function obtenerPuntaje(i, j) {
-    const diagonal = edges.find(cell => cell.i === i && cell.j === j);
-    if (diagonal) {
-        return diagonal.puntaje;
-    } else {
-        return null;
-    }
+    const cell = edges.find(c => c.i === i && c.j === j);
+    return cell && cell.puntaje !== undefined && cell.puntaje !== null ? cell.puntaje : null;
 }
 
 function obtenerSecuencia(data, i, secuencia) {
@@ -101,26 +120,26 @@ function obtenerPaso(i, j, m) {
 
 function createEquation(highlights = [], algorithm = 'sw') {
     let diagonal = "M_{i-1,j-1} + S(a_i,b_j)";
-    let superior = "M_{i,j-1} + S(a_i,-)";
-    let lateral = "M_{i-1,j} + S(-,b_j)";
+    let superior = "M_{i-1,j} + Gap";
+    let lateral = "M_{i,j-1} + Gap";
     let zero = "0";
 
     if (highlights.includes('diagonal')) {
-        diagonal = "\\bbox[2px,border:2px solid #9999FF]{" + diagonal + "}";
+        diagonal = "\\mathbf{" + diagonal + "}";
     }
     if (highlights.includes('superior')) {
-        superior = "\\bbox[2px,border:2px solid #9999FF]{" + superior + "}";
+        superior = "\\mathbf{" + superior + "}";
     }
     if (highlights.includes('lateral')) {
-        lateral = "\\bbox[2px,border:2px solid #9999FF]{" + lateral + "}";
+        lateral = "\\mathbf{" + lateral + "}";
     }
     if (highlights.includes('zero')) {
-        zero = "\\bbox[2px,border:2px solid #9999FF]{" + zero + "}";
+        zero = "\\mathbf{" + zero + "}";
     }
 
     if (algorithm === 'nw') {
-        return ` M_{ij} = \\max \\left\\{ \\begin{array}{l} ${diagonal} \\\\ ${superior} \\\\ ${lateral} \\end{array} \\right. `;
+        return `M_{ij} = \\max \\left\\{ \\begin{array}{ll} ${diagonal} & \\text{(Diagonal)} \\\\ ${superior} & \\text{(Superior)} \\\\ ${lateral} & \\text{(Lateral)} \\end{array} \\right.`;
     } else {
-        return ` M_{ij} = \\max \\left\\{ \\begin{array}{l} ${diagonal} \\\\ ${superior} \\\\ ${lateral} \\\\ ${zero} \\end{array} \\right. `;
+        return `M_{ij} = \\max \\left\\{ \\begin{array}{ll} ${diagonal} & \\text{(Diagonal)} \\\\ ${superior} & \\text{(Superior)} \\\\ ${lateral} & \\text{(Lateral)} \\\\ ${zero} & \\text{(Reinicio)} \\end{array} \\right.`;
     }
 }

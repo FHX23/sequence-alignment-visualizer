@@ -39,24 +39,24 @@
 				</li>
 
 				<li class="search-box">
-					<i class='bx bx-search icon'></i>
-					<input class="params" id="matchScore" type="number" placeholder="Ajuste" value="1" />
+					<i class='bx bx-check-circle icon'></i>
+					<input class="params" id="matchScore" type="number" placeholder="Match (+1)" value="1" title="Puntaje por coincidencia (Match)" />
 				</li>
 
 				<li class="search-box">
-					<i class='bx bx-search icon'></i>
-					<input class="params" id="mismatchScore" type="number" placeholder="Desajuste" value="-1" />
+					<i class='bx bx-x-circle icon'></i>
+					<input class="params" id="mismatchScore" type="number" placeholder="Mismatch (-1)" value="-1" title="Puntaje por discrepancia (Mismatch)" />
 				</li>
 
 				<li class="search-box">
-					<i class='bx bx-search icon'></i>
-					<input class="params" id="gapScore" type="number" placeholder="Gap" value="-2" />
+					<i class='bx bx-minus-circle icon'></i>
+					<input class="params" id="gapScore" type="number" placeholder="Gap (-2)" value="-2" title="Penalización por Gap" />
 				</li>
 
 				<li class="btn-compute">
 					<a href="#" id="calculateButton">
-						<i class='bx bx-calculator icon'></i>
-						<span class="text nav-text">Inicializar</span>
+						<i class='bx bx-refresh icon'></i>
+						<span class="text nav-text">Reiniciar</span>
 					</a>
 				</li>
 
@@ -70,6 +70,24 @@
 					<a href="#" class="btn-next" id="siguiente">
 						<i class='bx bx-right-arrow-alt icon'></i>
 						<span class="text nav-text">Siguiente</span>
+					</a>
+				</li>
+				<li>
+					<a href="#" id="sidebarAutoPlay">
+						<i class='bx bx-play icon'></i>
+						<span class="text nav-text" id="sidebarAutoPlayText">Auto</span>
+					</a>
+				</li>
+				<li>
+					<a href="#" id="sidebarPlus10">
+						<i class='bx bx-fast-forward icon'></i>
+						<span class="text nav-text">+10 Pasos</span>
+					</a>
+				</li>
+				<li>
+					<a href="#" id="sidebarToEnd">
+						<i class='bx bx-skip-next icon'></i>
+						<span class="text nav-text">Al Final</span>
 					</a>
 				</li>
 			</div>
@@ -87,6 +105,10 @@
 			</div>
 		</div>
 	</nav>
+
+	<main class="home">
+		<div id="root-container"></div>
+	</main>
 
 	<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/7.6.1/d3.min.js'></script>
 	<script src="./visualizer.js"></script>
