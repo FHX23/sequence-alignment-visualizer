@@ -9,7 +9,6 @@ var posicionActualCamino = 0;
 var final = 0;
 var n = 0;
 var m = 0;
-var autoPlayTimer = null;
 window.isFastForwarding = false;
 
 $(document).ready(function () {
@@ -24,6 +23,7 @@ $(document).ready(function () {
 
     $('.seq').on('input change', function () { inicializar(algoritmo); });
     $('.params').on('input change', function () { inicializar(algoritmo); });
+    
     $('.btn-compute').on('click', function (e) {
         e.preventDefault();
         darPasoInicio();
@@ -44,19 +44,9 @@ $(document).ready(function () {
         darPasoAnterior();
     });
 
-    $('#sidebarAutoPlay').on('click', function (e) {
+    $('#avanzarRapido').on('click', function (e) {
         e.preventDefault();
-        toggleAutoPlay();
-    });
-
-    $('#sidebarPlus10').on('click', function (e) {
-        e.preventDefault();
-        avanzar10Pasos();
-    });
-
-    $('#sidebarToEnd').on('click', function (e) {
-        e.preventDefault();
-        irAlFinal();
+        avanzarRapido();
     });
 });
 
@@ -66,14 +56,12 @@ function darPasoSiguiente() {
     if (final === 1 && paso === limite) {
         avanzar("nw", 0, 0);
         paso++;
-        actualizarEstadoControles();
         return false;
     }
 
     if (paso <= totalMatriz) {
         siguiente(algoritmo, paso);
         paso++;
-        actualizarEstadoControles();
         return true;
     } else {
         if (paso === totalMatriz + 1) {
@@ -92,7 +80,6 @@ function darPasoSiguiente() {
                 avanzar(algoritmo, caminos[0].coordenadas[posicionActualCamino][0], caminos[0].coordenadas[posicionActualCamino][1], caminos[0].pasos[posicionActualCamino]);
                 posicionActualCamino++;
                 paso++;
-                actualizarEstadoControles();
                 return true;
             }
             if (algoritmo === "nw") {
@@ -100,17 +87,14 @@ function darPasoSiguiente() {
                 posicionActualCamino++;
                 paso++;
                 if (paso === limite && algoritmo === "nw") final = 1;
-                actualizarEstadoControles();
                 return true;
             }
         }
     }
-    actualizarEstadoControles();
     return false;
 }
 
 function darPasoAnterior() {
-    detenerAutoPlay();
     const totalMatriz = (n - 1) * (m - 1);
 
     if (paso <= 2) {
@@ -142,180 +126,18 @@ function darPasoAnterior() {
         retroceder(algoritmo, 0, 0, paso - 2);
         paso--;
     }
-    actualizarEstadoControles();
 }
 
 function darPasoInicio() {
-    detenerAutoPlay();
     inicializar(algoritmo);
 }
 
-function avanzar10Pasos() {
-    detenerAutoPlay();
+function avanzarRapido() {
     for (let k = 0; k < 10; k++) {
         let ok = darPasoSiguiente();
         if (!ok) break;
     }
 }
-
-function irAlFinal() {
-    detenerAutoPlay();
-    const totalMatriz = (n - 1) * (m - 1);
-    window.isFastForwarding = true;
-
-    // 1. Completar celdas de la matriz
-    while (paso <= totalMatriz) {
-        siguiente(algoritmo, paso);
-        paso++;
-    }
-
-    // 2. Inicializar traceback
-    if (paso === totalMatriz + 1) {
-        let matriz = edges;
-        if (algoritmo === "nw") {
-            caminos = tracebackNW(matriz);
-            limite = paso + (caminos.pasos ? caminos.pasos.length : 0);
-        } else {
-            caminos = tracebackSW(matriz);
-            limite = paso + (caminos.length > 0 ? caminos[0].pasos.length : 0);
-        }
-    }
-
-    // 3. Marcar todo el camino de traceback
-    if (algoritmo === "nw" && caminos && caminos.pasos) {
-        while (posicionActualCamino < caminos.pasos.length) {
-            marcarCamino(caminos.coordenadas[posicionActualCamino][0], caminos.coordenadas[posicionActualCamino][1], caminos.pasos[posicionActualCamino]);
-            posicionActualCamino++;
-            paso++;
-        }
-        final = 1;
-        marcarCamino(0, 0, null);
-    } else if (algoritmo === "sw" && caminos && caminos.length > 0 && caminos[0].pasos) {
-        while (posicionActualCamino < caminos[0].pasos.length) {
-            marcarCamino(caminos[0].coordenadas[posicionActualCamino][0], caminos[0].coordenadas[posicionActualCamino][1], caminos[0].pasos[posicionActualCamino]);
-            posicionActualCamino++;
-            paso++;
-        }
-    }
-
-    window.isFastForwarding = false;
-
-    // Renderizar estado final completo
-    if (algoritmo === "nw") {
-        avanzar(algoritmo, 0, 0);
-    } else if (algoritmo === "sw" && caminos.length > 0 && caminos[0].coordenadas.length > 0) {
-        let lastCoord = caminos[0].coordenadas[caminos[0].coordenadas.length - 1];
-        let lastPaso = caminos[0].pasos[caminos[0].pasos.length - 1];
-        avanzar(algoritmo, lastCoord[0], lastCoord[1], lastPaso);
-    }
-    actualizarEstadoControles();
-}
-
-function toggleAutoPlay() {
-    if (autoPlayTimer) {
-        detenerAutoPlay();
-    } else {
-        iniciarAutoPlay();
-    }
-}
-
-function iniciarAutoPlay() {
-    detenerAutoPlay();
-    actualizarBotonesAuto(true);
-    autoPlayTimer = setInterval(function () {
-        let ok = darPasoSiguiente();
-        if (!ok) {
-            detenerAutoPlay();
-        }
-    }, 120);
-}
-
-function detenerAutoPlay() {
-    if (autoPlayTimer) {
-        clearInterval(autoPlayTimer);
-        autoPlayTimer = null;
-    }
-    actualizarBotonesAuto(false);
-}
-
-function actualizarBotonesAuto(isPlaying) {
-    const btnTop = document.getElementById("btn-autoplay");
-    if (btnTop) {
-        btnTop.innerHTML = isPlaying 
-            ? "<i class='bx bx-pause'></i> Pausa" 
-            : "<i class='bx bx-play'></i> Auto";
-        if (isPlaying) {
-            btnTop.classList.add("btn-active-auto");
-        } else {
-            btnTop.classList.remove("btn-active-auto");
-        }
-    }
-    const btnSidebar = document.getElementById("sidebarAutoPlayText");
-    const iconSidebar = document.querySelector("#sidebarAutoPlay i");
-    if (btnSidebar) btnSidebar.innerText = isPlaying ? "Pausa" : "Auto";
-    if (iconSidebar) iconSidebar.className = isPlaying ? "bx bx-pause icon" : "bx bx-play icon";
-}
-
-function actualizarEstadoControles() {
-    const totalMatriz = (n - 1) * (m - 1);
-    const esInicio = (paso <= 1);
-    const esFin = (final === 1 && paso > limite) || (algoritmo === "sw" && caminos.length > 0 && posicionActualCamino >= caminos[0].pasos.length);
-
-    // Botones Anterior / Inicio
-    const btnPrevTop = document.getElementById("btn-prev");
-    const btnPrevSide = document.getElementById("anterior");
-    const btnInicioTop = document.getElementById("btn-inicio");
-
-    if (btnPrevTop) btnPrevTop.disabled = esInicio;
-    if (btnPrevSide) $(btnPrevSide).css("pointer-events", esInicio ? "none" : "auto").css("opacity", esInicio ? "0.45" : "1");
-    if (btnInicioTop) btnInicioTop.disabled = esInicio;
-
-    // Botones Siguiente / +10 / Final / Auto
-    const btnNextTop = document.getElementById("btn-next");
-    const btnNextSide = document.getElementById("siguiente");
-    const btnPlus10Top = document.getElementById("btn-plus10");
-    const btnPlus10Side = document.getElementById("sidebarPlus10");
-    const btnEndTop = document.getElementById("btn-end");
-    const btnEndSide = document.getElementById("sidebarToEnd");
-    const btnAutoTop = document.getElementById("btn-autoplay");
-    const btnAutoSide = document.getElementById("sidebarAutoPlay");
-
-    if (btnNextTop) btnNextTop.disabled = esFin;
-    if (btnNextSide) $(btnNextSide).css("pointer-events", esFin ? "none" : "auto").css("opacity", esFin ? "0.45" : "1");
-    if (btnPlus10Top) btnPlus10Top.disabled = esFin;
-    if (btnPlus10Side) $(btnPlus10Side).css("pointer-events", esFin ? "none" : "auto").css("opacity", esFin ? "0.45" : "1");
-    if (btnEndTop) btnEndTop.disabled = esFin;
-    if (btnEndSide) $(btnEndSide).css("pointer-events", esFin ? "none" : "auto").css("opacity", esFin ? "0.45" : "1");
-    if (btnAutoTop) btnAutoTop.disabled = esFin;
-    if (btnAutoSide) $(btnAutoSide).css("pointer-events", esFin ? "none" : "auto").css("opacity", esFin ? "0.45" : "1");
-
-    // Badge de progreso
-    const badge = document.getElementById("progress-badge");
-    if (badge) {
-        if (paso <= 1) {
-            badge.innerText = `Paso 0 de ${totalMatriz} (Inicio)`;
-        } else if (paso <= totalMatriz + 1) {
-            const pasoActual = Math.min(paso - 1, totalMatriz);
-            const pct = Math.round((pasoActual / totalMatriz) * 100);
-            badge.innerText = `Llenado: ${pasoActual}/${totalMatriz} (${pct}%)`;
-        } else if (!esFin) {
-            const totalTb = (algoritmo === "nw") ? (caminos.pasos ? caminos.pasos.length : 0) : (caminos[0] ? caminos[0].pasos.length : 0);
-            badge.innerText = `Traceback: ${posicionActualCamino}/${totalTb}`;
-        } else {
-            badge.innerText = `✅ Alineamiento Completo`;
-        }
-    }
-}
-
-// Exponer globalmente para onclick de HTML
-window.darPasoSiguiente = darPasoSiguiente;
-window.darPasoAnterior = darPasoAnterior;
-window.darPasoInicio = darPasoInicio;
-window.avanzar10Pasos = avanzar10Pasos;
-window.irAlFinal = irAlFinal;
-window.toggleAutoPlay = toggleAutoPlay;
-window.detenerAutoPlay = detenerAutoPlay;
-window.actualizarEstadoControles = actualizarEstadoControles;
 
 function convertirMayusculas(event) {
     const input = event.target;
@@ -446,7 +268,6 @@ function tracebackNW(matriz) {
             pasos.push("lateral");
             j--;
         } else {
-            // Fallback de seguridad hacia el origen
             if (i > 0 && j > 0) {
                 camino.push(celdaActual);
                 coordenadas.push([i, j]);
@@ -476,16 +297,8 @@ function tracebackNW(matriz) {
 
 // Alternar entre Global (NW) y Local (SW)
 const body = document.querySelector('body');
-const sidebar = body.querySelector('nav');
-const toggle = body.querySelector('.toggle');
-const modeSwitch = body.querySelector('.toggle-switch');
-const modeText = body.querySelector('.mode-text');
-
-if (toggle) {
-    toggle.addEventListener('click', () => {
-        sidebar.classList.toggle('close');
-    });
-}
+const modeSwitch = document.querySelector('.toggle-switch');
+const modeText = document.querySelector('.mode-text');
 
 if (modeSwitch) {
     modeSwitch.addEventListener("click", () => {

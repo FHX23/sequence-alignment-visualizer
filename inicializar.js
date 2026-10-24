@@ -1,8 +1,4 @@
 function inicializar(algoritmo) {
-    if (typeof window.detenerAutoPlay === 'function') {
-        window.detenerAutoPlay();
-    }
-
     d3.select("#root").remove();
     edges = [];
     nodes = [];
@@ -57,7 +53,4 @@ function inicializar(algoritmo) {
     };
 
     renderizarMatriz(config);
-    if (typeof window.actualizarEstadoControles === 'function') {
-        window.actualizarEstadoControles();
-    }
 }
