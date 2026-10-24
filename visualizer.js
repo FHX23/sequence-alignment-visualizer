@@ -32,7 +32,7 @@ function renderizarMatriz(config) {
 
     // Título y subtítulo
     root.append("h1").attr("class", "app-title").text(titulo);
-    root.append("p").attr("class", "app-subtitle").html(subtitulo);
+    root.append("p").attr("class", "app-subtitle").html(`${subtitulo} · <a href="https://github.com/FHX23/sequence-alignment-visualizer" target="_blank" rel="noopener noreferrer" style="color: #4f46e5; text-decoration: underline; font-weight: 600;"><i class='bx bxl-github'></i> Ver código</a>`);
 
     // Dimensionamiento adaptable de celdas según largo de secuencias
     const maxAvailableWidth = 720;

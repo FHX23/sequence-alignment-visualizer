@@ -161,6 +161,20 @@ body.dark {
     color: #FFF;
 }
 
+.sidebar li a.btn-github {
+    background-color: #24292e;
+    margin-top: 4px;
+}
+
+.sidebar li a.btn-github .icon,
+.sidebar li a.btn-github .text {
+    color: #ffffff;
+}
+
+.sidebar li a.btn-github:hover {
+    background-color: #0f1419;
+}
+
 .sidebar .bottom-content {
     list-style: none;
     padding-top: 8px;

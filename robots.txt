@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://fhx23.github.io/sequence-alignment-visualizer/sitemap.xml

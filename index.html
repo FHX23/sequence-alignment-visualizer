@@ -4,7 +4,52 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Visualizador de Alineamiento de Secuencias - Bioinformática UBB</title>
+	<title>Alineamiento de Secuencias Online | Needleman-Wunsch & Smith-Waterman</title>
+	
+	<!-- SEO Primario -->
+	<meta name="description" content="Visualizador interactivo de alineamiento de secuencias biológicas (ADN/ARN) con programación dinámica. Aprende los algoritmos de Needleman-Wunsch (Global) y Smith-Waterman (Local) paso a paso.">
+	<meta name="keywords" content="Needleman-Wunsch, Smith-Waterman, alineamiento de secuencias, bioinformática, programación dinámica, sequence alignment visualizer, matriz de sustitución, traceback, algoritmos genéticos, ADN, ARN">
+	<meta name="author" content="Matias Arenas (FHX23)">
+	<meta name="robots" content="index, follow">
+	<link rel="canonical" href="https://fhx23.github.io/sequence-alignment-visualizer/">
+
+	<!-- Verificación de Google Search Console -->
+	<meta name="google-site-verification" content="google25c403e6d892fc21">
+
+	<!-- Open Graph / Redes Sociales (Facebook, LinkedIn, Discord) -->
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="https://fhx23.github.io/sequence-alignment-visualizer/">
+	<meta property="og:title" content="Visualizador de Alineamiento de Secuencias | Needleman-Wunsch & Smith-Waterman">
+	<meta property="og:description" content="Calcula y visualiza la matriz de programación dinámica y el traceback paso a paso con fórmulas matemáticas en tiempo real.">
+	<meta property="og:image" content="https://fhx23.github.io/sequence-alignment-visualizer/images/ubb.png">
+	<meta property="og:locale" content="es_ES">
+	<meta property="og:site_name" content="Sequence Alignment Visualizer">
+
+	<!-- Twitter Cards -->
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="Alineamiento de Secuencias Online - Needleman-Wunsch & Smith-Waterman">
+	<meta name="twitter:description" content="Herramienta online para entender algoritmos de bioinformática paso a paso con matrices interactivas y trazado hacia atrás.">
+	<meta name="twitter:image" content="https://fhx23.github.io/sequence-alignment-visualizer/images/ubb.png">
+
+	<!-- Datos estructurados Schema.org para Google (JSON-LD) -->
+	<script type="application/ld+json">
+	{
+	  "@context": "https://schema.org",
+	  "@type": "WebApplication",
+	  "name": "Sequence Alignment Visualizer",
+	  "url": "https://fhx23.github.io/sequence-alignment-visualizer/",
+	  "description": "Visualizador interactivo de algoritmos de programación dinámica para bioinformática: Needleman-Wunsch (Alineamiento Global) y Smith-Waterman (Alineamiento Local).",
+	  "applicationCategory": "EducationalApplication",
+	  "operatingSystem": "All",
+	  "author": {
+	    "@type": "Person",
+	    "name": "Matias Arenas",
+	    "url": "https://github.com/FHX23"
+	  },
+	  "keywords": "Needleman-Wunsch, Smith-Waterman, bioinformática, programación dinámica, alineamiento de secuencias"
+	}
+	</script>
+
 	<link rel="icon" href="./images/favicon.ico" type="image/x-icon">
 	<link rel="stylesheet" href="./style.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
@@ -79,6 +124,12 @@
 					<a href="#" class="btn-fast" id="avanzarRapido">
 						<i class='bx bx-fast-forward icon'></i>
 						<span class="text nav-text">Avanzar Rápido</span>
+					</a>
+				</li>
+				<li>
+					<a href="https://github.com/FHX23/sequence-alignment-visualizer" target="_blank" rel="noopener noreferrer" class="btn-github" title="Ver código fuente en GitHub">
+						<i class='bx bxl-github icon'></i>
+						<span class="text nav-text">Código en GitHub</span>
 					</a>
 				</li>
 			</div>
